@@ -21,14 +21,20 @@ if (navigator.geolocation)
 
       const coords = [latitude, longitude];
 
-      const map = L.map('map').setView(coords, 10);
+      const map = L.map('map').setView(coords, 13);
 
-      L.tileLayer('https://tile.openstreetmap./{z}/{x}/{y}.png', {
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(map);
 
       L.marker(coords).addTo(map).bindPopup(`Your location`).openPopup();
+
+      // Adding popup to the map
+      map.on('click', function (mapEvent) {
+        const { lat, lng } = mapEvent.latlng;
+        L.marker([lat, lng]).addTo(map);
+      });
     },
     function () {
       alert(`Could not find your position`);

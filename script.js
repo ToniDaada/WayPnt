@@ -14,38 +14,50 @@ const inputElevation = document.querySelector('.form__input--elevation');
 let map;
 let mapEvent;
 
-// Using the geolocation API
-if (navigator.geolocation)
-  navigator.geolocation.getCurrentPosition(
-    function (position) {
-      const { latitude } = position.coords;
-      const { longitude } = position.coords;
-
-      console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
-
-      const coords = [latitude, longitude];
-
-      map = L.map('map').setView(coords, 16);
-
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {
-        foo: 'bar',
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(map);
-
-      // Adding popup to the map
-      // Handles clicks on map
-
-      map.on('click', function (mapE) {
-        mapEvent = mapE;
-        form.classList.remove('hidden');
-        inputDistance.focus();
+class App {
+  constructor() {}
+  _getPosition() {
+    if (navigator.geolocation)
+      navigator.geolocation.getCurrentPosition(this._loadMap(), function () {
+        alert(`Could not find your position`);
       });
-    },
-    function () {
-      alert(`Could not find your position`);
-    }
-  );
+  }
+
+  _loadMap(position) {
+    const { latitude } = position.coords;
+    const { longitude } = position.coords;
+
+    console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
+
+    const coords = [latitude, longitude];
+
+    map = L.map('map').setView(coords, 16);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {
+      foo: 'bar',
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+
+    // Adding popup to the map
+    // Handles clicks on map
+
+    map.on('click', function (mapE) {
+      mapEvent = mapE;
+      form.classList.remove('hidden');
+      inputDistance.focus();
+    });
+  }
+
+  _showForm() {}
+
+  _toggleElevationField() {}
+
+  _newWorkOut() {}
+}
+
+const app = new App();
+
 // Handles submit on map forms
 form.addEventListener('submit', function (e) {
   e.preventDefault();

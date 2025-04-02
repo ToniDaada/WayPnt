@@ -165,7 +165,7 @@ class App {
   }
   renderWorkoutMarker(workout) {
     L.marker(workout.coords, {
-      draggable: false,
+      draggable: true,
     })
       .addTo(this.#map)
       .bindPopup(

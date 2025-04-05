@@ -3,6 +3,7 @@
 class Workout {
   date = new Date();
   id = (Date.now() + '').slice(-10);
+  clicks = 0;
   constructor(coords, distance, duration) {
     this.coords = coords; //[lat.lng]
     this.distance = distance;
@@ -16,6 +17,10 @@ class Workout {
     this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${
       months[this.date.getMonth()]
     } ${this.date.getDate()}`;
+  }
+
+  click() {
+    this.clicks++;
   }
 }
 
@@ -62,6 +67,7 @@ class App {
   #map;
   #mapEvent;
   #workouts = [];
+  #mapZoomLEVEL = 16;
 
   constructor() {
     this._getPosition();
@@ -71,6 +77,7 @@ class App {
 
     // Listens  to the input change and toggles the form__row--hidden class. So one is always showing while the other is hidden
     inputType.addEventListener('change', this._toggleElevationField.bind(this));
+    containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
   }
   _getPosition() {
     if (navigator.geolocation)
@@ -89,7 +96,7 @@ class App {
     console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
 
     const coords = [latitude, longitude];
-    this.#map = L.map('map').setView(coords, 16);
+    this.#map = L.map('map').setView(coords, this.#mapZoomLEVEL);
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {
       foo: 'bar',
@@ -257,6 +264,26 @@ class App {
     }
 
     form.insertAdjacentHTML('afterend', html);
+  }
+  // Moving to marker on click
+  _moveToPopup(e) {
+    const workoutEl = e.target.closest('.workout');
+    // console.log(workoutEl);
+    if (!workoutEl) return;
+
+    const workout = this.#workouts.find(
+      value => value.id === workoutEl.dataset.id
+    );
+    //  Check leaflet documentation
+    this.#map.setView(workout.coords, this.#mapZoomLEVEL, {
+      animate: true,
+      pan: {
+        duration: 1,
+      },
+    });
+
+    // Using the public interface
+    workout.click();
   }
 }
 
